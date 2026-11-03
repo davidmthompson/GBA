@@ -69,3 +69,26 @@ test("L/R and Q/E switch tabs in menus without changing in-game buttons", () => 
     manager.rawDown("gamepad", "b4", "gp0:b4");
     assert.deepEqual(events, ["l"]);
 });
+
+test("bindings are drawn as keycaps, face buttons, shoulders, d-pad or stick glyphs", async () => {
+    const { glyphShape } = await import("../input/glyphs.js");
+    assert.deepEqual(glyphShape("keyboard", "KeyX"), { shape: "key", size: "normal" });
+    assert.deepEqual(glyphShape("keyboard", "Enter"), { shape: "key", size: "wide" });
+    assert.deepEqual(glyphShape("keyboard", "ShiftLeft"), { shape: "key", size: "wide" });
+    assert.deepEqual(glyphShape("keyboard", "Space"), { shape: "key", size: "space" });
+    assert.deepEqual(glyphShape("gamepad", "b0"), { shape: "face", position: "south" });
+    assert.deepEqual(glyphShape("gamepad", "b3"), { shape: "face", position: "north" });
+    assert.deepEqual(glyphShape("gamepad", "b6"), { shape: "shoulder" });
+    assert.deepEqual(glyphShape("gamepad", "b14"), { shape: "dpad", direction: "left" });
+    assert.deepEqual(glyphShape("gamepad", "a1-"), { shape: "stick", stick: "left", direction: "up" });
+    assert.deepEqual(glyphShape("gamepad", "a2+"), { shape: "stick", stick: "right", direction: "right" });
+    assert.deepEqual(glyphShape("gamepad", "b9"), { shape: "pill" });
+});
+
+test("every action appears in exactly one Controls group", async () => {
+    const { ACTIONS } = await import("../input/actions.js");
+    const { remapGroups } = await import("../input/remap-ui.js");
+    const listed = remapGroups().flatMap((group) => group.actions);
+    assert.deepEqual([...listed].sort(), ACTIONS.map((action) => action.id).sort());
+    assert.deepEqual(remapGroups().map((group) => group.label), ["D-pad", "Buttons", "Shoulders", "System", "Emulator"]);
+});

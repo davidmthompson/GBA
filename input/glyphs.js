@@ -94,3 +94,49 @@ export function keyboardLabel(code) {
 export function bindingLabel(device, binding, family) {
     return device === "keyboard" ? keyboardLabel(binding) : gamepadLabel(binding, family);
 }
+
+/*
+ How a binding is drawn on the Controls screen:
+   keyboard - { shape: "key", size: "normal" | "wide" | "space" }
+   gamepad  - face buttons 0-3 { shape: "face", position: "south" | "east" | "west" | "north" },
+              bumpers / triggers 4-7 { shape: "shoulder" }, d-pad 12-15 { shape: "dpad", direction },
+              stick axes { shape: "stick", stick: "left" | "right", direction },
+              anything else { shape: "pill" }
+ */
+const DIRECTIONS_BY_DPAD = { 12: "up", 13: "down", 14: "left", 15: "right" };
+const FACE_POSITIONS = ["south", "east", "west", "north"];
+
+export function glyphShape(device, binding) {
+    if (device === "keyboard") {
+        if (binding === "Space") {
+            return { shape: "key", size: "space" };
+        }
+        return { shape: "key", size: keyboardLabel(binding).length > 2 ? "wide" : "normal" };
+    }
+    const button = /^b(\d+)$/.exec(binding);
+    if (button) {
+        const index = Number(button[1]);
+        if (index <= 3) {
+            return { shape: "face", position: FACE_POSITIONS[index] };
+        }
+        if (index <= 7) {
+            return { shape: "shoulder" };
+        }
+        if (DIRECTIONS_BY_DPAD[index]) {
+            return { shape: "dpad", direction: DIRECTIONS_BY_DPAD[index] };
+        }
+        return { shape: "pill" };
+    }
+    const axis = /^a(\d+)([+-])$/.exec(binding);
+    if (axis) {
+        const index = Number(axis[1]);
+        const vertical = index % 2 === 1;
+        const positive = axis[2] === "+";
+        return {
+            shape: "stick",
+            stick: index < 2 ? "left" : "right",
+            direction: vertical ? (positive ? "down" : "up") : (positive ? "right" : "left")
+        };
+    }
+    return { shape: "pill" };
+}

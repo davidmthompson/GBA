@@ -13,6 +13,10 @@
 
 ## Unreleased: Settings and controls menu
 
+- **Bindings** are grouped cards (D-pad, Buttons, Shoulders, System, Emulator) with Keyboard and Controller columns.
+  Keys are drawn as keycaps, controller buttons as glyphs for the connected pad (round face buttons, shoulder pills,
+  d-pad and stick icons), monochrome with the accent only for focus and listening. Empty slots are dashed "+ Add"
+  caps, × shows on hover/focus, reset appears only when a row was changed, and listening happens inline in the row.
 - **Settings** has a side tab rail (Controls, Touch, Audio & Video, Gameplay, About) that becomes top tabs on
   phones. LB/RB on a controller or Q/E on a keyboard switch tabs (new `prev_tab` / `next_tab` menu actions),
   and a footer shows hints for the input in use.

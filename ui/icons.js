@@ -20,7 +20,12 @@ const PATHS = {
     reset: '<path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3L4.5 9"/><path d="M4.5 4.5V9H9"/>',
     plus: '<path d="M12 5v14M5 12h14"/>',
     keyboard: '<rect x="3" y="6.5" width="18" height="11" rx="2"/><path d="M7 10h.01M10 10h.01M13 10h.01M16 10h.01M8 14h8"/>',
-    rumble: '<rect x="8" y="4" width="8" height="16" rx="2"/><path d="M4.5 8v8M2 10v4M19.5 8v8M22 10v4"/>'
+    rumble: '<rect x="8" y="4" width="8" height="16" rx="2"/><path d="M4.5 8v8M2 10v4M19.5 8v8M22 10v4"/>',
+    dpad: '<path d="M9.5 3.5h5v6h6v5h-6v6h-5v-6h-6v-5h6z"/>',
+    face: '<circle cx="12" cy="6.5" r="2.5"/><circle cx="6.5" cy="12" r="2.5"/><circle cx="17.5" cy="12" r="2.5"/><circle cx="12" cy="17.5" r="2.5"/>',
+    shoulder: '<path d="M4 15V11a5 5 0 0 1 5-5h6a5 5 0 0 1 5 5v4"/><path d="M4 15h16v3H4z"/>',
+    system: '<rect x="3.5" y="9" width="7" height="6" rx="3"/><rect x="13.5" y="9" width="7" height="6" rx="3"/>',
+    gauge: '<path d="M4 16a8 8 0 1 1 16 0"/><path d="m12 16 4-5"/><path d="M4 19h16"/>'
 };
 
 export function icon(name) {

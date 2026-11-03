@@ -22,7 +22,7 @@
  */
 
 // @precache-start
-const VERSION = "5ce53c9c2797";
+const VERSION = "6451945a5ad9";
 const PRECACHE = [
     ["./", "ec447067b1"],
     ["Binaries/gba_bios.bin", "fd2547724b"],
@@ -70,7 +70,7 @@ const PRECACHE = [
     ["IodineGBA/core/sound/Channel4.js", "6e9eaa6d00"],
     ["IodineGBA/core/sound/FIFO.js", "920254cb6d"],
     ["IodineGBA/includes/TypedArrayShim.js", "6008833e4c"],
-    ["css/app.css", "1f49c52d89"],
+    ["css/app.css", "491f7533bd"],
     ["css/library.css", "e6c1e1d661"],
     ["css/tokens.css", "474d060ba2"],
     ["data/games.js", "f1b3c1cfbc"],
@@ -85,11 +85,11 @@ const PRECACHE = [
     ["input/actions.js", "9ac6e1065d"],
     ["input/bindings.js", "32a6b823eb"],
     ["input/gamepad.js", "aa46c95464"],
-    ["input/glyphs.js", "71384e9e51"],
+    ["input/glyphs.js", "32ba73c28c"],
     ["input/keyboard.js", "110e7055c4"],
     ["input/menu-nav.js", "1fa48eb39f"],
     ["input/pad-diagram.js", "9fdcdbbba6"],
-    ["input/remap-ui.js", "1734592d3e"],
+    ["input/remap-ui.js", "8c6725dea7"],
     ["input/touch-overlay.js", "0de189dae2"],
     ["launcher.html", "d522f0b121"],
     ["manifest.webmanifest", "6c3d107ad4"],
@@ -98,7 +98,7 @@ const PRECACHE = [
     ["ui/app.js", "f6a672b9da"],
     ["ui/dialogs.js", "d8f51f297d"],
     ["ui/hints.js", "a5a07cba03"],
-    ["ui/icons.js", "1d64fa0f2e"],
+    ["ui/icons.js", "726326ea5e"],
     ["ui/launcher.js", "4c0d559216"],
     ["ui/library.js", "ef320f1c9d"],
     ["ui/settings-dialog.js", "b85c4b380f"],

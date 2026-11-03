@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased: Cover art
+
+- **Box art for 180 of 183 games** from [libretro-thumbnails](https://github.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance)
+  (Named_Boxarts), scaled to fit a transparent 256x256 PNG in `covers/` and listed in `covers/manifest.json`.
+  `marioland`, `nesgh1` and `pokemongb` have no art and keep the placeholder tile.
+- **`npm run fetch:covers`** (`scripts/fetch-covers.mjs` + `scripts/resize-covers.ps1`) re-downloads and resizes
+  everything listed in `covers/sources.list` (`id|file|libretro name[|fallback]`).
+
 ## 2.0.0 (2026-11-02): Redesign, PWA, controllers, remapping and touch
 
 ### Branding (Goal 1)

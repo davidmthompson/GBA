@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "build:sw": "node scripts/build-sw.mjs",
+    "fetch:covers": "node scripts/fetch-covers.mjs",
     "serve": "node scripts/serve.mjs",
     "start": "node scripts/serve.mjs",
     "test": "node scripts/build-sw.mjs --check && node --test \"tests/*.test.mjs\""

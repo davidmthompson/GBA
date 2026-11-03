@@ -113,14 +113,15 @@ touch-overlay.js ┘        ▲                          │
 | `data/games.js` | Game catalogue shared by both pages |
 | `icons/` | Logo (black and white) and app icons |
 | `IodineGBA/`, `user_scripts/` | Emulator core and its glue code |
-| `scripts/` | `build-sw.mjs`, `serve.mjs` (Node built-ins only) |
+| `scripts/` | `build-sw.mjs`, `serve.mjs`, `fetch-covers.mjs` (Node built-ins only) |
+| `covers/` | 256x256 box art, `manifest.json` and `sources.list` (libretro names) |
 | `tests/` | `node:test` unit tests |
 
 ## ➕ Adding a game
 
 1. Copy the ROM to `Binaries/<id>.gba`.
 2. Add `{"id": "<id>", "title": "Full Title", "short": "Card title"}` to `data/games.js`
-   (optionally `"cover": "path.png"`, or add the id to `covers/manifest.json`).
+   (optionally `"cover": "path.png"`, or add a line to `covers/sources.list` and run `npm run fetch:covers`).
 3. `npm test` (it checks every entry has a ROM). The ROM itself isn't precached, so `build:sw` is only needed
    because `data/games.js` changed.
 
@@ -128,6 +129,7 @@ touch-overlay.js ┘        ▲                          │
 
 - **Emulator core**: [IodineGBA](https://github.com/taisel/IodineGBA) by Grant Galitz (MIT) · audio by XAudioJS
 - **Original site and engine setup**: Keyz
+- **Box art**: [libretro-thumbnails](https://github.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance) (Named_Boxarts), resized to 256x256
 - **Design, PWA, input and touch**: [David Thompson](https://davidthompson.dev)
 
 ---

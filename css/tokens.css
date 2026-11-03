@@ -1,0 +1,162 @@
+/*
+ Brand tokens: the single source of colours, type, spacing, radii and motion for the app.
+ Values come from davidthompson.dev (body gradient #01315f → #000, accent #1e90ff, button
+ gradient #0d6efd → #1d4ed8, glass panels with 12px blur, Roboto, 8/12/14/50px radii).
+
+ Dark is the default (as on davidthompson.dev). Light applies when the OS prefers light and the
+ user has not chosen, or when <html data-theme="light"> is set. data-theme="dark" forces dark.
+ Text colours were checked for WCAG AA (4.5:1) against their backgrounds.
+ */
+:root {
+    color-scheme: dark;
+
+    /* Brand palette */
+    --brand-navy: #01315f;
+    --brand-black: #000000;
+    --brand-blue: #1e90ff;
+    --brand-blue-strong: #0d6efd;
+    --brand-blue-deep: #1d4ed8;
+    --brand-ink: #111827;
+    --brand-mist: #f3f7fb;
+
+    /* Surfaces */
+    --bg: linear-gradient(#01315f, #000) no-repeat fixed;
+    --bg-solid: #01315f;
+    --surface: #ffffff0d;
+    --surface-2: #ffffff14;
+    --surface-3: #ffffff1a;
+    --surface-hover: #ffffff26;
+    --panel: linear-gradient(160deg, #011320fc, #000810fc);
+    --border: #ffffff26;
+    --border-strong: #ffffff4d;
+    --overlay: #0000009e;
+    --blur: blur(12px);
+
+    /* Text: #fff on navy 12.6:1; muted #c9d6e3 on navy 9.8:1; accent text #5aaeff on navy 5.6:1 */
+    --text: #ffffff;
+    --text-muted: #c9d6e3;
+    --text-accent: #5aaeff;
+    --text-on-accent: #ffffff;
+
+    /* Accent */
+    --accent: #1e90ff;
+    --accent-soft: #1e90ff33;
+    --accent-softer: #1e90ff1f;
+    --accent-glow: #1e90ff80;
+    --button-primary: linear-gradient(135deg, #0d6efd, #1d4ed8); /* white text ≥ 4.5:1 */
+    --danger: #ff6b6b;
+    --success: #4ade80;
+
+    /* Focus ring: thick accent ring with a dark halo so it reads on any background */
+    --focus-ring: 0 0 0 3px #01315f, 0 0 0 6px #5aaeff;
+    --focus-ring-gamepad: 0 0 0 3px #01315f, 0 0 0 7px #5aaeff, 0 0 24px 6px #1e90ff99;
+
+    /* Type */
+    --font-sans: "Roboto", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    --font-pixel: "Press Start 2P", ui-monospace, monospace;
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-md: 1rem;
+    --text-lg: 1.25rem;
+    --text-xl: clamp(1.5rem, 1.1rem + 1.6vw, 2.5rem);
+    --weight-light: 300;
+    --weight-regular: 400;
+    --weight-medium: 500;
+    --weight-bold: 600;
+
+    /* Spacing (4px scale) */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
+    --space-7: 48px;
+    --space-8: 64px;
+    --gutter: clamp(16px, 3vw, 40px);
+    --content-max: 1600px;
+
+    /* Radii */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 14px;
+    --radius-pill: 50px;
+    --radius-round: 50%;
+
+    /* Elevation */
+    --shadow-1: 0 1px 2px #0000004d, 0 2px 8px #0000004d;
+    --shadow-2: 0 8px 28px #00000080;
+
+    /* Motion */
+    --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+    --duration-fast: 120ms;
+    --duration: 200ms;
+    --duration-slow: 320ms;
+
+    /* Touch */
+    --touch-min: 44px;
+}
+
+/* Light theme: brand mist background with navy text. */
+:root[data-theme="light"] {
+    color-scheme: light;
+    --bg: linear-gradient(#f3f7fb, #dfe9f4) no-repeat fixed;
+    --bg-solid: #f3f7fb;
+    --surface: #ffffffb3;
+    --surface-2: #ffffffd9;
+    --surface-3: #ffffff;
+    --surface-hover: #e7f0fa;
+    --panel: linear-gradient(160deg, #fffffffc, #f3f7fbfc);
+    --border: #01315f26;
+    --border-strong: #01315f4d;
+    --overlay: #01315f66;
+    /* navy on mist 12.2:1; muted #3e4f63 on mist 7.4:1; accent text #1d4ed8 on mist 6.2:1 */
+    --text: #01315f;
+    --text-muted: #3e4f63;
+    --text-accent: #1d4ed8;
+    --accent-soft: #0d6efd26;
+    --accent-softer: #0d6efd14;
+    --accent-glow: #0d6efd66;
+    --danger: #c0262d;
+    --success: #18794e;
+    --focus-ring: 0 0 0 3px #ffffff, 0 0 0 6px #1d4ed8;
+    --focus-ring-gamepad: 0 0 0 3px #ffffff, 0 0 0 7px #1d4ed8, 0 0 24px 6px #0d6efd80;
+    --shadow-1: 0 1px 2px #01315f1f, 0 2px 8px #01315f1f;
+    --shadow-2: 0 8px 28px #01315f33;
+}
+
+@media (prefers-color-scheme: light) {
+    :root:not([data-theme]) {
+        color-scheme: light;
+        --bg: linear-gradient(#f3f7fb, #dfe9f4) no-repeat fixed;
+        --bg-solid: #f3f7fb;
+        --surface: #ffffffb3;
+        --surface-2: #ffffffd9;
+        --surface-3: #ffffff;
+        --surface-hover: #e7f0fa;
+        --panel: linear-gradient(160deg, #fffffffc, #f3f7fbfc);
+        --border: #01315f26;
+        --border-strong: #01315f4d;
+        --overlay: #01315f66;
+        --text: #01315f;
+        --text-muted: #3e4f63;
+        --text-accent: #1d4ed8;
+        --accent-soft: #0d6efd26;
+        --accent-softer: #0d6efd14;
+        --accent-glow: #0d6efd66;
+        --danger: #c0262d;
+        --success: #18794e;
+        --focus-ring: 0 0 0 3px #ffffff, 0 0 0 6px #1d4ed8;
+        --focus-ring-gamepad: 0 0 0 3px #ffffff, 0 0 0 7px #1d4ed8, 0 0 24px 6px #0d6efd80;
+        --shadow-1: 0 1px 2px #01315f1f, 0 2px 8px #01315f1f;
+        --shadow-2: 0 8px 28px #01315f33;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --duration-fast: 0ms;
+        --duration: 0ms;
+        --duration-slow: 0ms;
+    }
+}

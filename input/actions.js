@@ -37,7 +37,9 @@ export const ACTIONS = [
     { id: "volume_down", label: "Volume down", scope: "game", group: "Emulator" },
     { id: "menu", label: "Open / close menu", scope: "both", group: "Menus" },
     { id: "confirm", label: "Confirm", scope: "menu", group: "Menus" },
-    { id: "back", label: "Back", scope: "menu", group: "Menus" }
+    { id: "back", label: "Back", scope: "menu", group: "Menus" },
+    { id: "prev_tab", label: "Previous tab", scope: "menu", group: "Menus" },
+    { id: "next_tab", label: "Next tab", scope: "menu", group: "Menus" }
 ];
 
 export const ACTION_MAP = Object.fromEntries(ACTIONS.map((action) => [action.id, action]));

@@ -6,7 +6,7 @@
 import { bindingLabel } from "../input/glyphs.js";
 
 export class HintsBar {
-    // items: () => [{ action, label }]
+    // items: () => [{ action, label }] or [{ actions: [...], label }] for a pair like L / R
     constructor(element, app, items) {
         this.element = element;
         this.app = app;
@@ -31,13 +31,19 @@ export class HintsBar {
         }
         const family = this.app.gamepad.family();
         const profile = this.app.gamepad.lastPad ? this.app.gamepad.lastPad.id : "*";
-        const parts = this.items().map(({ action, label }) => {
-            const binding = this.app.bindings.get(device, action, profile)[0];
-            if (!binding) {
+        const parts = this.items().map(({ action, actions = [action], label }) => {
+            const glyphs = actions.map((each) => {
+                const binding = this.app.bindings.get(device, each, profile)[0];
+                if (!binding) {
+                    return "";
+                }
+                const glyph = bindingLabel(device, binding, family);
+                return `<kbd class="glyph glyph--${device === "gamepad" ? family : "key"}" data-glyph="${glyph}">${glyph}</kbd>`;
+            });
+            if (glyphs.some((glyph) => !glyph)) {
                 return "";
             }
-            const glyph = bindingLabel(device, binding, family);
-            return `<span class="hints__item"><kbd class="glyph glyph--${device === "gamepad" ? family : "key"}" data-glyph="${glyph}">${glyph}</kbd>${label}</span>`;
+            return `<span class="hints__item">${glyphs.join("")}${label}</span>`;
         }).filter(Boolean);
         this.element.innerHTML = parts.join("");
         this.element.hidden = parts.length === 0;

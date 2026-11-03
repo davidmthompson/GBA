@@ -12,6 +12,7 @@ export const DEFAULT_SETTINGS = {
     triggerThreshold: 0.35,   // analog trigger value that counts as a press
     volume: 1,                // emulator volume (0-1)
     showHints: true,          // controller button hints bar
+    menuRepeat: "normal",     // held-direction repeat speed in menus: "slow" | "normal" | "fast"
     touch: {
         mode: "auto",         // "auto" (touch devices) | "always" | "never"
         scale: 1,             // control size multiplier (0.7-1.5)

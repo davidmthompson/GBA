@@ -37,15 +37,20 @@ Run `npm test` first: it should pass and say `sw.js is up to date`. Test on the 
 - [ ] Disconnect the pad: a **"… disconnected"** toast shows and no button stays stuck down.
 
 ## 5. Remap a button
-- [ ] Settings → **Controls** → **Rebind** on "A", then press a different controller button (for example Y/△).
-      A toast confirms it, and the chip shows the new glyph.
-- [ ] Rebind "A" to the button "B" uses: the **"already used by B. Swap them?"** prompt appears, and **Swap**
-      exchanges them.
+- [ ] Settings → **Controls**: press keys and pad buttons; the matching buttons on the controller diagram light up,
+      labelled with your controller's glyphs (or key names).
+- [ ] LB/RB (or Q/E) switch between the Controls, Touch, Audio & Video, Gameplay and About tabs.
+- [ ] Select the **"A"** action, then press a different controller button (for example Y/△) while the countdown
+      ring runs. A toast confirms it, and the chip shows the new glyph.
+- [ ] Rebind "A" to the button "B" uses: a red banner **"… is already used by B. Swap them?"** appears on the row,
+      and **Swap** exchanges them (**Cancel** changes nothing).
 - [ ] **+** on the keyboard column for "Start" and press P: Start now has Enter **and** P.
-- [ ] Select a binding chip to remove it. **↺** resets one action; **Reset all to defaults** (press twice) resets everything.
+- [ ] Select a binding chip (×) to remove it. **↺** resets one action; **Reset all to defaults** asks to confirm first.
 - [ ] Rebind and then wait 5 seconds: it times out and nothing changes. Rebind and press Esc, or hold B for about
       a second: it's cancelled.
-- [ ] With a controller connected, switch **Controller bindings apply to** to that controller, change a binding,
+- [ ] Gameplay tab: moving the left stick moves the dot in the dead-zone circle, pulling a trigger fills the bar,
+      **Test rumble** vibrates the pad, and left/right change sliders and switches.
+- [ ] With two controllers connected, pick one in **Controller** on the Controls tab, change a binding,
       and check that the "All controllers" profile is unchanged.
 - [ ] Do all of the above using **only the controller**, then **only the keyboard**.
 

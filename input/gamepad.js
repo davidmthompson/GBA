@@ -14,9 +14,18 @@
 import { DIRECTIONS } from "./actions.js";
 import { controllerFamily, controllerName } from "./glyphs.js";
 
-const REPEAT_DELAY = 400;
-const REPEAT_INTERVAL = 110;
 const TRIGGER_INDICES = new Set([6, 7]);
+
+// Menu auto-repeat timing for held directions, from settings.menuRepeat.
+const REPEAT_TIMING = {
+    slow: { delay: 520, interval: 170 },
+    normal: { delay: 400, interval: 110 },
+    fast: { delay: 300, interval: 65 }
+};
+
+export function repeatTiming(speed) {
+    return REPEAT_TIMING[speed] || REPEAT_TIMING.normal;
+}
 
 export class GamepadInput extends EventTarget {
     constructor(manager, settings, { notify = () => {} } = {}) {
@@ -170,7 +179,7 @@ export class GamepadInput extends EventTarget {
     change(pressed, binding, key, value, profile, pad, time) {
         const state = this.pads.get(pad.index);
         if (pressed) {
-            state.repeat.set(key, time + REPEAT_DELAY);
+            state.repeat.set(key, time + repeatTiming(this.settings.get("menuRepeat")).delay);
             this.manager.rawDown("gamepad", binding, key, { value, profile, raw: pad });
         }
         else {
@@ -190,7 +199,7 @@ export class GamepadInput extends EventTarget {
         if (actions.some((action) => DIRECTIONS.includes(action))) {
             this.manager.rawDown("gamepad", binding, key, { repeat: true, profile, raw: pad });
         }
-        state.repeat.set(key, time + REPEAT_INTERVAL);
+        state.repeat.set(key, time + repeatTiming(this.settings.get("menuRepeat")).interval);
     }
 
     // Short vibration on the given (or last used) pad, if supported and enabled.

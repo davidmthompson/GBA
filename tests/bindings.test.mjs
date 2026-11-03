@@ -142,9 +142,9 @@ test("per-controller profiles override the shared profile action by action", () 
 test("corrupt or unknown stored data falls back to defaults", () => {
     const store = new BindingStore(fakeStorage({ [STORAGE_KEY]: "{not json" }));
     assert.deepEqual(store.get("keyboard", "a"), ["KeyX"]);
-    const odd = new BindingStore(fakeStorage({ [STORAGE_KEY]: JSON.stringify({ keyboard: { nope: ["KeyQ"], a: [1, "KeyQ"] } }) }));
-    assert.deepEqual(odd.get("keyboard", "a"), ["KeyQ"]);
-    assert.deepEqual(odd.actionsFor("keyboard", "KeyQ"), ["a"]);
+    const odd = new BindingStore(fakeStorage({ [STORAGE_KEY]: JSON.stringify({ keyboard: { nope: ["KeyJ"], a: [1, "KeyJ"] } }) }));
+    assert.deepEqual(odd.get("keyboard", "a"), ["KeyJ"]);
+    assert.deepEqual(odd.actionsFor("keyboard", "KeyJ"), ["a"]);
 });
 
 test("a throwing storage does not break binding changes", () => {

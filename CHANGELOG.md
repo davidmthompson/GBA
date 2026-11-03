@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased: Settings and controls menu
+
+- **Settings** has a side tab rail (Controls, Touch, Audio & Video, Gameplay, About) that becomes top tabs on
+  phones. LB/RB on a controller or Q/E on a keyboard switch tabs (new `prev_tab` / `next_tab` menu actions),
+  and a footer shows hints for the input in use.
+- **Controls** tab: a GBA-style controller diagram (`input/pad-diagram.js`) labelled with the bound keys or
+  Xbox / PlayStation / Switch glyphs, which lights up live as you press buttons. The bindings list has one row per
+  action with glyph chips, + / × and a per-row reset; selecting an action opens a large "Press a key or button…"
+  overlay with a countdown ring. Conflicts show an inline Swap / Cancel banner, "Reset all" asks to confirm, and a
+  controller picker appears when several pads are connected.
+- **Gameplay** tab: dead-zone slider with a live stick visualiser, trigger threshold with a live bar, rumble switch
+  with **Test rumble**, and a new **menu repeat speed** setting (`menuRepeat`: slow / normal / fast).
+- Left/right on a controller now turn switches on and off, as they already changed sliders.
+- **Pause menu** is a full-screen overlay over the dimmed, blurred game, with the game's cover and title, a large
+  list with icons, glyph hints, and a short fade (instant with reduced motion).
+
 ## Unreleased: Cover art
 
 - **Box art for 180 of 183 games** from [libretro-thumbnails](https://github.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance)

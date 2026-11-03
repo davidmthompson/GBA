@@ -6,6 +6,7 @@
 import { TouchOverlay } from "../input/touch-overlay.js";
 import { createApp } from "./app.js";
 import { HintsBar } from "./hints.js";
+import { applyIcons } from "./icons.js";
 
 const gameId = decodeURIComponent(location.hash.slice(1));
 const pauseMenu = document.getElementById("pause-menu");
@@ -91,6 +92,13 @@ manager.addEventListener("actiondown", (event) => {
 });
 
 document.getElementById("menu-button").addEventListener("click", openMenu);
+
+// Clicking the empty area around the pause menu resumes, like a dialog backdrop.
+pauseMenu.querySelector("[data-pause-backdrop]").addEventListener("click", (event) => {
+    if (event.target === event.currentTarget) {
+        app.dialogs.close(pauseMenu);
+    }
+});
 
 // ---- Pause menu actions ----
 
@@ -190,9 +198,52 @@ window.addEventListener("load", () => {
 
 // ---- Page chrome ----
 
-const title = (window.games && window.games[gameId]) || "Game not found";
+const known = !!(window.games && window.games[gameId]);
+const title = known ? window.games[gameId] : "Game not found";
 document.getElementById("game-title").textContent = title;
+document.getElementById("pause-game-title").textContent = title;
 document.title = `${title} · GBA`;
+applyIcons(pauseMenu);
+
+// Pause menu cover: covers/manifest.json, then data/games.js, then initials.
+async function loadPauseCover() {
+    const holder = document.getElementById("pause-cover");
+    const game = (window.gameLibrary || []).find((each) => each.id === gameId);
+    let src = game && game.cover;
+    try {
+        const response = await fetch("covers/manifest.json");
+        if (response.ok) {
+            const entry = (await response.json())[gameId];
+            const file = typeof entry === "string" ? entry : entry && (entry.file || entry.path || entry.image);
+            if (file) {
+                src = /^(covers\/|\/|https?:)/.test(file) ? file : `covers/${file}`;
+            }
+        }
+    }
+    catch (error) {
+        // Offline without a cached manifest.
+    }
+    const fallback = () => {
+        holder.classList.add("pause__cover--placeholder");
+        holder.textContent = (game ? game.short : "?").replace(/[^A-Za-z0-9 ]/g, " ").split(/\s+/).filter(Boolean).slice(0, 2).map((word) => word[0]).join("").toUpperCase();
+    };
+    if (!src) {
+        fallback();
+        return;
+    }
+    const image = new Image(256, 256);
+    image.alt = "";
+    image.decoding = "async";
+    image.addEventListener("error", () => {
+        image.remove();
+        fallback();
+    }, { once: true });
+    image.src = src;
+    holder.replaceChildren(image);
+}
+loadPauseCover();
+const saveButton = pauseMenu.querySelector("[data-menu=save]");
+saveButton.hidden = typeof window.ExportSave !== "function";
 window.addEventListener("hashchange", () => location.reload());
 
 // Block browser gestures that interfere with play (long-press menu, pinch, double-tap zoom).
@@ -212,6 +263,12 @@ overlay.addEventListener("visibility", (event) => {
     }
 });
 overlay.updateVisibility();
+
+new HintsBar(document.getElementById("pause-hints"), app, () => [
+    { actions: ["up", "down"], label: "Choose" },
+    { action: "confirm", label: "Select" },
+    { action: "back", label: "Resume" }
+]);
 
 new HintsBar(document.getElementById("hints"), app, () => (manager.mode === "game"
     ? [{ action: "menu", label: "Menu" }]

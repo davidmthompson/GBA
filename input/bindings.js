@@ -37,7 +37,9 @@ export const DEFAULT_BINDINGS = {
         volume_down: ["KeyD"],
         menu: ["Escape"],
         confirm: ["Enter", "Space"],
-        back: ["Backspace"]
+        back: ["Backspace"],
+        prev_tab: ["KeyQ"],
+        next_tab: ["KeyE"]
     },
     gamepad: {
         // Standard layout: 0 south, 1 east, 2 west, 3 north, 4/5 bumpers, 6/7 triggers,
@@ -59,7 +61,9 @@ export const DEFAULT_BINDINGS = {
         volume_down: [],
         menu: ["b16", "b11"],
         confirm: ["b0"],
-        back: ["b1"]
+        back: ["b1"],
+        prev_tab: ["b4"],
+        next_tab: ["b5"]
     }
 };
 

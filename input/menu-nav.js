@@ -1,6 +1,7 @@
 /*
  Spatial focus navigation for menus, dialogs and the library grid, driven by actions only.
    up/down/left/right - move focus to the nearest focusable element in that direction
+                        (left/right change a focused slider or switch instead)
    confirm            - activate the focused element (click)
    back               - handled by the page (close dialog / leave screen)
  Works the same for gamepad, keyboard arrows and anything else bound to those actions.
@@ -51,6 +52,11 @@ export function nearest(fromRect, candidates, direction) {
         }
     }
     return best;
+}
+
+// The state a switch takes for a left/right press.
+export function switchValueFor(direction) {
+    return direction === "right";
 }
 
 export class MenuNavigator {
@@ -122,6 +128,16 @@ export class MenuNavigator {
             }
             active.dispatchEvent(new Event("input", { bubbles: true }));
             active.dispatchEvent(new Event("change", { bubbles: true }));
+            return;
+        }
+        // Switches: right turns on, left turns off.
+        if (active.type === "checkbox" && active.getAttribute("role") === "switch" && (direction === "left" || direction === "right")) {
+            const checked = switchValueFor(direction);
+            if (active.checked !== checked) {
+                active.checked = checked;
+                active.dispatchEvent(new Event("input", { bubbles: true }));
+                active.dispatchEvent(new Event("change", { bubbles: true }));
+            }
             return;
         }
         const candidates = focusables(scope)

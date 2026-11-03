@@ -43,7 +43,18 @@ export class GamepadInput extends EventTarget {
         }
         window.addEventListener("gamepadconnected", (event) => this.onConnect(event.gamepad));
         window.addEventListener("gamepaddisconnected", (event) => this.onDisconnect(event.gamepad));
-        // Pads already connected before the page loaded (e.g. navigating from the library).
+        // Pads already connected before the page loaded (e.g. opening a game from the library).
+        // Chrome does not fire gamepadconnected again for those, and may only expose them after
+        // a gesture on this page, so scan now, on the first key / tap and when the tab returns.
+        this.scan();
+        const scan = () => this.scan();
+        window.addEventListener("keydown", scan, true);
+        window.addEventListener("pointerdown", scan, true);
+        document.addEventListener("visibilitychange", scan);
+    }
+
+    // Starts tracking any connected pad that has not been seen yet.
+    scan() {
         for (const pad of this.readPads()) {
             this.onConnect(pad, true);
         }

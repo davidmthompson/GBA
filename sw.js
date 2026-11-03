@@ -22,7 +22,7 @@
  */
 
 // @precache-start
-const VERSION = "c9fbb2d392dd";
+const VERSION = "5ce53c9c2797";
 const PRECACHE = [
     ["./", "ec447067b1"],
     ["Binaries/gba_bios.bin", "fd2547724b"],
@@ -84,7 +84,7 @@ const PRECACHE = [
     ["index.html", "ec447067b1"],
     ["input/actions.js", "9ac6e1065d"],
     ["input/bindings.js", "32a6b823eb"],
-    ["input/gamepad.js", "580f9651d1"],
+    ["input/gamepad.js", "aa46c95464"],
     ["input/glyphs.js", "71384e9e51"],
     ["input/keyboard.js", "110e7055c4"],
     ["input/menu-nav.js", "1fa48eb39f"],
@@ -94,7 +94,7 @@ const PRECACHE = [
     ["launcher.html", "d522f0b121"],
     ["manifest.webmanifest", "6c3d107ad4"],
     ["pwa/install.js", "010cb447fe"],
-    ["pwa/register.js", "c26494e5ff"],
+    ["pwa/register.js", "34459846b4"],
     ["ui/app.js", "f6a672b9da"],
     ["ui/dialogs.js", "d8f51f297d"],
     ["ui/hints.js", "a5a07cba03"],
@@ -143,6 +143,10 @@ self.addEventListener("install", (event) => {
             const body = response.redirected ? new Response(await response.blob(), { headers: response.headers }) : response;
             await cache.put(toUrl(path), body);
         }));
+        // Take over at once. Pages and their scripts both come from this version's cache (see
+        // shellPage), so an open page keeps the files it loaded and the next load is consistent.
+        // Waiting for a "Reload" click left people stuck on an old (possibly broken) build.
+        await self.skipWaiting();
     })());
 });
 
@@ -182,7 +186,7 @@ self.addEventListener("fetch", (event) => {
         return;
     }
     if (request.mode === "navigate") {
-        event.respondWith(networkFirstPage(request));
+        event.respondWith(shellPage(request));
         return;
     }
     if (/\.gba$/i.test(url.pathname)) {
@@ -196,6 +200,23 @@ self.addEventListener("fetch", (event) => {
     }
     event.respondWith(staleWhileRevalidate(request, RUNTIME_CACHE));
 });
+
+/*
+ App pages (index.html, launcher.html) come from the same versioned cache as their scripts and
+ styles, so HTML and JS always match. Serving the page from the network while the scripts came
+ from an older cache mixed versions: new markup with old code. Other pages: network first.
+ */
+async function shellPage(request) {
+    const url = new URL(request.url);
+    const key = url.origin + (url.pathname.endsWith("/") ? url.pathname + "index.html" : url.pathname);
+    if (PRECACHE_URLS.has(key)) {
+        const cached = await caches.match(key, { cacheName: SHELL_CACHE });
+        if (cached) {
+            return cached;
+        }
+    }
+    return networkFirstPage(request);
+}
 
 async function networkFirstPage(request) {
     const url = new URL(request.url);

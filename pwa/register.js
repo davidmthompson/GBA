@@ -1,17 +1,21 @@
 /*
  Service worker registration and the "Update available" prompt.
 
- When a new sw.js is deployed, the browser installs it in the background and it waits. We show a
- toast; choosing Reload tells the waiting worker to take over (SKIP_WAITING) and reloads once it
- controls the page.
+ When a new sw.js is deployed, the browser installs it in the background and it takes over at once
+ (sw.js calls skipWaiting). The open page keeps running the files it already loaded; we show a
+ toast, and choosing Reload loads the new version. Nothing reloads by itself, so a game in progress
+ is never interrupted.
  */
 import { toast } from "../ui/toast.js";
 
 export const updateState = new EventTarget();
 let waitingWorker = null;
+let reloadRequested = false;
 
 export function applyUpdate() {
-    if (waitingWorker) {
+    reloadRequested = true;
+    // An older worker may still be waiting (it predates skipWaiting): activate it first.
+    if (waitingWorker && waitingWorker.state === "installed") {
         waitingWorker.postMessage({ type: "SKIP_WAITING" });
     }
     else {
@@ -39,7 +43,7 @@ export function registerServiceWorker({ beforeReload = () => {} } = {}) {
     }
     let reloading = false;
     navigator.serviceWorker.addEventListener("controllerchange", () => {
-        if (reloading || !waitingWorker) {
+        if (reloading || !reloadRequested) {
             return;
         }
         reloading = true;

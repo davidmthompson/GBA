@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased: Fixes
+
+- **Pause menu and controller not working in games.** A syntax error in `ui/launcher.js` stopped the game page's
+  script, so the input layer, controller bridge and menu never started, and the service worker kept serving that
+  file: it waited for a "Reload" click that only the library page offered, and served new page HTML next to old
+  cached scripts. The service worker now takes over as soon as it installs and serves app pages from the same
+  versioned cache as their scripts. Nothing reloads by itself mid-game.
+- Controllers that were already connected before a game page opened are picked up on the first key press or tap.
+- New start-up tests: every browser script must parse, input from keyboard, controller and touch must reach the
+  emulator, and the service worker must not mix versions.
+
 ## Unreleased: Settings and controls menu
 
 - **Settings** has a side tab rail (Controls, Touch, Audio & Video, Gameplay, About) that becomes top tabs on

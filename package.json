@@ -1,0 +1,16 @@
+{
+  "name": "gba-emulator",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Browser Game Boy Advance player (IodineGBA) with PWA, gamepad, remapping and touch controls. Made by David Thompson.",
+  "type": "module",
+  "scripts": {
+    "build:sw": "node scripts/build-sw.mjs",
+    "serve": "node scripts/serve.mjs",
+    "start": "node scripts/serve.mjs",
+    "test": "node scripts/build-sw.mjs --check && node --test \"tests/*.test.mjs\""
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

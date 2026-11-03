@@ -22,7 +22,9 @@ function ImportSaveCallback(name) {
     return null;
 }
 function ExportSave() {
-    Iodine.exportSave();
+    if (Iodine) {
+        Iodine.exportSave();
+    }
 }
 function ExportSaveCallback(name, save) {
     if (name != "") {
@@ -33,6 +35,17 @@ function ExportSaveCallback(name, save) {
             alert("Could not store save: " + error.message);
         }
     }
+}
+//Write the save to localStorage whenever the page may be going away. "unload" alone is unreliable
+//on mobile and in installed PWAs, so also save on pagehide and when the tab is hidden.
+function registerSaveTriggers() {
+    addEvent("unload", window, ExportSave);
+    addEvent("pagehide", window, ExportSave);
+    addEvent("visibilitychange", document, function () {
+        if (document.visibilityState == "hidden") {
+            ExportSave();
+        }
+    });
 }
 function registerSaveHandlers() {
     Iodine.attachSaveExportHandler(ExportSaveCallback);

@@ -1,67 +1,133 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <link rel="shortcut icon" href="Binaries/gb.ico">
-        <title>GBA Emulator</title>
-        <meta charset="UTF-8">
-            <!--Required Scripts-->
-            <script src="IodineGBA/includes/TypedArrayShim.js"></script>
-            <script src="IodineGBA/core/Cartridge.js"></script>
-            <script src="IodineGBA/core/DMA.js"></script>
-            <script src="IodineGBA/core/Emulator.js"></script>
-            <script src="IodineGBA/core/Graphics.js"></script>
-            <script src="IodineGBA/core/RunLoop.js"></script>
-            <script src="IodineGBA/core/Memory.js"></script>
-            <script src="IodineGBA/core/IRQ.js"></script>
-            <script src="IodineGBA/core/JoyPad.js"></script>
-            <script src="IodineGBA/core/Serial.js"></script>
-            <script src="IodineGBA/core/Sound.js"></script>
-            <script src="IodineGBA/core/Timer.js"></script>
-            <script src="IodineGBA/core/Wait.js"></script>
-            <script src="IodineGBA/core/CPU.js"></script>
-            <script src="IodineGBA/core/Saves.js"></script>
-            <script src="IodineGBA/core/sound/FIFO.js"></script>
-            <script src="IodineGBA/core/sound/Channel1.js"></script>
-            <script src="IodineGBA/core/sound/Channel2.js"></script>
-            <script src="IodineGBA/core/sound/Channel3.js"></script>
-            <script src="IodineGBA/core/sound/Channel4.js"></script>
-            <script src="IodineGBA/core/CPU/ARM.js"></script>
-            <script src="IodineGBA/core/CPU/THUMB.js"></script>
-            <script src="IodineGBA/core/CPU/CPSR.js"></script>
-            <script src="IodineGBA/core/graphics/Renderer.js"></script>
-            <script src="IodineGBA/core/graphics/RendererProxy.js"></script>
-            <script src="IodineGBA/core/graphics/BGTEXT.js"></script>
-            <script src="IodineGBA/core/graphics/BG2FrameBuffer.js"></script>
-            <script src="IodineGBA/core/graphics/BGMatrix.js"></script>
-            <script src="IodineGBA/core/graphics/AffineBG.js"></script>
-            <script src="IodineGBA/core/graphics/ColorEffects.js"></script>
-            <script src="IodineGBA/core/graphics/Mosaic.js"></script>
-            <script src="IodineGBA/core/graphics/OBJ.js"></script>
-            <script src="IodineGBA/core/graphics/OBJWindow.js"></script>
-            <script src="IodineGBA/core/graphics/Window.js"></script>
-            <script src="IodineGBA/core/graphics/Compositor.js"></script>
-            <script src="IodineGBA/core/memory/DMA0.js"></script>
-            <script src="IodineGBA/core/memory/DMA1.js"></script>
-            <script src="IodineGBA/core/memory/DMA2.js"></script>
-            <script src="IodineGBA/core/memory/DMA3.js"></script>
-            <script src="IodineGBA/core/cartridge/SaveDeterminer.js"></script>
-            <script src="IodineGBA/core/cartridge/SRAM.js"></script>
-            <script src="IodineGBA/core/cartridge/FLASH.js"></script>
-            <script src="IodineGBA/core/cartridge/EEPROM.js"></script>
-            <script src="user_scripts/XAudioJS/swfobject.js"></script>
-            <script src="user_scripts/XAudioJS/resampler.js"></script>
-            <script src="user_scripts/XAudioJS/XAudioServer.js"></script>
-            <script src="user_scripts/IodineGBAROMLoadGlueCode.js"></script>
-            <script src="user_scripts/IodineGBAJoyPadGlueCode.js"></script>
-            <script src="user_scripts/IodineGBASavesGlueCode.js"></script>
-            <script src="user_scripts/IodineGBAGraphicsGlueCode.js"></script>
-            <script src="user_scripts/IodineGBAAudioGlueCode.js"></script>
-            <script src="user_scripts/IodineGBACoreGlueCode.js"></script>
-            <script src="user_scripts/base64.js"></script>
-            <link rel="stylesheet" href="user_css/main.css">
-    </head>
-    <body>
-        <canvas id="emulator_target" width="240px" height="160px"></canvas>
-        <span id="tempMessage"></span>
-    </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>GBA Emulator</title>
+    <meta name="theme-color" content="#01315f">
+    <meta name="color-scheme" content="dark light">
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="GBA">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+    <script>
+        try {
+            var savedTheme = (JSON.parse(localStorage.getItem("gba.settings.v1") || "{}") || {}).theme;
+            if (savedTheme === "light" || savedTheme === "dark") {
+                document.documentElement.setAttribute("data-theme", savedTheme);
+            }
+        }
+        catch (error) {}
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="user_css/main.css">
+    <!--Required Scripts-->
+    <script src="IodineGBA/includes/TypedArrayShim.js"></script>
+    <script src="IodineGBA/core/Cartridge.js"></script>
+    <script src="IodineGBA/core/DMA.js"></script>
+    <script src="IodineGBA/core/Emulator.js"></script>
+    <script src="IodineGBA/core/Graphics.js"></script>
+    <script src="IodineGBA/core/RunLoop.js"></script>
+    <script src="IodineGBA/core/Memory.js"></script>
+    <script src="IodineGBA/core/IRQ.js"></script>
+    <script src="IodineGBA/core/JoyPad.js"></script>
+    <script src="IodineGBA/core/Serial.js"></script>
+    <script src="IodineGBA/core/Sound.js"></script>
+    <script src="IodineGBA/core/Timer.js"></script>
+    <script src="IodineGBA/core/Wait.js"></script>
+    <script src="IodineGBA/core/CPU.js"></script>
+    <script src="IodineGBA/core/Saves.js"></script>
+    <script src="IodineGBA/core/sound/FIFO.js"></script>
+    <script src="IodineGBA/core/sound/Channel1.js"></script>
+    <script src="IodineGBA/core/sound/Channel2.js"></script>
+    <script src="IodineGBA/core/sound/Channel3.js"></script>
+    <script src="IodineGBA/core/sound/Channel4.js"></script>
+    <script src="IodineGBA/core/CPU/ARM.js"></script>
+    <script src="IodineGBA/core/CPU/THUMB.js"></script>
+    <script src="IodineGBA/core/CPU/CPSR.js"></script>
+    <script src="IodineGBA/core/graphics/Renderer.js"></script>
+    <script src="IodineGBA/core/graphics/RendererProxy.js"></script>
+    <script src="IodineGBA/core/graphics/BGTEXT.js"></script>
+    <script src="IodineGBA/core/graphics/BG2FrameBuffer.js"></script>
+    <script src="IodineGBA/core/graphics/BGMatrix.js"></script>
+    <script src="IodineGBA/core/graphics/AffineBG.js"></script>
+    <script src="IodineGBA/core/graphics/ColorEffects.js"></script>
+    <script src="IodineGBA/core/graphics/Mosaic.js"></script>
+    <script src="IodineGBA/core/graphics/OBJ.js"></script>
+    <script src="IodineGBA/core/graphics/OBJWindow.js"></script>
+    <script src="IodineGBA/core/graphics/Window.js"></script>
+    <script src="IodineGBA/core/graphics/Compositor.js"></script>
+    <script src="IodineGBA/core/memory/DMA0.js"></script>
+    <script src="IodineGBA/core/memory/DMA1.js"></script>
+    <script src="IodineGBA/core/memory/DMA2.js"></script>
+    <script src="IodineGBA/core/memory/DMA3.js"></script>
+    <script src="IodineGBA/core/cartridge/SaveDeterminer.js"></script>
+    <script src="IodineGBA/core/cartridge/SRAM.js"></script>
+    <script src="IodineGBA/core/cartridge/FLASH.js"></script>
+    <script src="IodineGBA/core/cartridge/EEPROM.js"></script>
+    <script src="user_scripts/XAudioJS/swfobject.js"></script>
+    <script src="user_scripts/XAudioJS/resampler.js"></script>
+    <script src="user_scripts/XAudioJS/XAudioServer.js"></script>
+    <script src="data/games.js"></script>
+    <script src="user_scripts/IodineGBAROMLoadGlueCode.js"></script>
+    <script src="user_scripts/IodineGBAJoyPadGlueCode.js"></script>
+    <script src="user_scripts/IodineGBASavesGlueCode.js"></script>
+    <script src="user_scripts/IodineGBAGraphicsGlueCode.js"></script>
+    <script src="user_scripts/IodineGBAAudioGlueCode.js"></script>
+    <script src="user_scripts/IodineGBACoreGlueCode.js"></script>
+    <script src="user_scripts/base64.js"></script>
+    <!--UI and input layer (ES modules, run before window.onload)-->
+    <script type="module" src="ui/launcher.js"></script>
+</head>
+<body class="page page--game">
+    <header class="game-bar">
+        <a class="btn btn--icon btn--ghost" href="./" aria-label="Back to the game library"><span aria-hidden="true">←</span></a>
+        <h1 class="game-bar__title" id="game-title">Loading…</h1>
+        <div id="hints" class="game-bar__hints" hidden></div>
+        <button type="button" class="btn btn--icon" id="menu-button" aria-haspopup="dialog" aria-label="Open menu"><span aria-hidden="true">☰</span></button>
+    </header>
+
+    <main class="stage" id="stage">
+        <div class="screen" id="screen">
+            <canvas id="emulator_target" width="240" height="160" role="img" aria-label="Game screen"></canvas>
+            <span id="tempMessage" role="status" aria-live="polite"></span>
+            <div class="screen__error" role="alert">
+                <p class="screen__error-text screen__error-text--not-found">This game isn't in the library.</p>
+                <p class="screen__error-text screen__error-text--download">The game couldn't be downloaded. If you're offline, only games you've played before are available.</p>
+                <a class="btn btn--primary" href="./">Back to the library</a>
+            </div>
+        </div>
+        <div class="touch-layer" id="touch-layer" hidden></div>
+    </main>
+
+    <div class="layout-editor" id="layout-editor" role="toolbar" aria-label="Touch layout editor" hidden>
+        <p class="layout-editor__text">Drag the buttons to move them.</p>
+        <button type="button" class="btn btn--small" data-editor="hand">Swap sides</button>
+        <button type="button" class="btn btn--small" data-editor="reset">Reset</button>
+        <button type="button" class="btn btn--small btn--primary" data-editor="done">Done</button>
+    </div>
+
+    <dialog class="dialog dialog--menu" id="pause-menu" aria-labelledby="pause-title">
+        <div class="dialog__header">
+            <h2 class="dialog__title" id="pause-title">Paused</h2>
+        </div>
+        <div class="dialog__body menu-list">
+            <button type="button" class="menu-item menu-item--primary" data-menu="resume" data-nav-default><span aria-hidden="true">▶</span><span>Resume</span></button>
+            <button type="button" class="menu-item" data-menu="save"><span aria-hidden="true">💾</span><span>Save game</span></button>
+            <button type="button" class="menu-item" data-menu="controls"><span aria-hidden="true">🎮</span><span>Controls</span></button>
+            <button type="button" class="menu-item" data-menu="layout"><span aria-hidden="true">✥</span><span>Move touch buttons</span></button>
+            <button type="button" class="menu-item" data-menu="settings"><span aria-hidden="true">⚙</span><span>Settings</span></button>
+            <button type="button" class="menu-item" data-menu="fullscreen"><span aria-hidden="true">⛶</span><span>Full screen</span></button>
+            <a class="menu-item" href="./"><span aria-hidden="true">←</span><span>Back to library</span></a>
+            <p class="credit credit--small">Made by <a href="https://davidthompson.dev" target="_blank" rel="noopener">David Thompson</a></p>
+        </div>
+    </dialog>
+</body>
 </html>

@@ -1,28 +1,428 @@
-html, body {
-    padding: 0;
-    margin: 0;
+/*
+ Emulator page (launcher.html): toolbar, aspect-correct game screen, status messages,
+ touch controls and the touch layout editor. Colours and sizes come from css/tokens.css.
+ */
+html,
+body.page--game {
+    height: 100%;
+}
+
+body.page--game {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+    /* No pull-to-refresh, rubber-banding, double-tap zoom, text selection or callouts while playing. */
+    overscroll-behavior: none;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+}
+
+/* ---- Toolbar ---- */
+
+.game-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: calc(var(--space-1) + env(safe-area-inset-top)) var(--space-2) var(--space-1);
+    min-height: 52px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+}
+
+.game-bar__title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    font-size: var(--text-md);
+    font-weight: var(--weight-medium);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.game-bar__hints {
+    flex: none;
+}
+
+@media (max-width: 600px) {
+    .game-bar__hints {
+        display: none !important;
+    }
+}
+
+/* ---- Stage and screen ---- */
+
+.stage {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    padding: var(--space-3);
+    container-type: size;
+}
+
+.screen {
+    position: relative;
+    flex: none;
+    /* Largest 3:2 box that fits the stage. */
+    width: min(100cqw, 150cqh);
+    aspect-ratio: 3 / 2;
+}
+
+@supports not (width: 1cqw) {
+    .screen {
+        width: min(100%, calc((100dvh - 80px) * 1.5));
+    }
+}
+
+#emulator_target {
+    display: block;
     width: 100%;
     height: 100%;
+    border-radius: var(--radius-sm);
+    background: #000;
+    box-shadow: 0 0 0 1px var(--border), var(--shadow-2);
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
     cursor: none;
-    background:rgb(248, 237, 212);
+    transition: filter var(--duration) var(--ease);
 }
-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+
+.is-paused #emulator_target {
+    filter: brightness(0.55) saturate(0.8);
 }
-span {
-    color: blue;
-    bottom: 0px;
+
+/* Status line ("Downloading…", "Loaded save."), toggled by the glue code via display. */
+#tempMessage {
     position: absolute;
-    right: 0px;
+    left: 50%;
+    bottom: var(--space-3);
     display: none;
-    font-size: 40pt;
-    font-weight: bold;
-    text-align: right;
-    vertical-align: bottom;
-    font-family: monospace;
-    display:none;
+    max-width: calc(100% - 2 * var(--space-4));
+    padding: var(--space-2) var(--space-4);
+    transform: translateX(-50%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    background: var(--panel);
+    color: var(--text);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+    text-align: center;
+    box-shadow: var(--shadow-1);
+}
+
+.screen__error {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    border-radius: var(--radius-sm);
+    background: var(--panel);
+    text-align: center;
+}
+
+.screen__error-text {
+    display: none;
+    max-width: 40ch;
+    margin: 0;
+}
+
+[data-load-error] .screen__error {
+    display: flex;
+}
+
+[data-load-error="not-found"] .screen__error-text--not-found,
+[data-load-error="download"] .screen__error-text--download {
+    display: block;
+}
+
+[data-load-error] #tempMessage {
+    display: none !important;
+}
+
+/* ---- Touch controls ---- */
+
+.touch-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    touch-action: none;
+    --touch-scale: 1;
+    --touch-opacity: 0.75;
+}
+
+/* Portrait with touch controls: screen on top, controls in the space below. */
+@media (orientation: portrait) {
+    .touch-active .stage {
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: var(--space-2);
+        padding: var(--space-2);
+    }
+
+    .touch-active .screen {
+        width: min(100cqw, 75cqh);
+    }
+
+    .touch-active .touch-layer {
+        position: relative;
+        inset: auto;
+        flex: 1;
+        width: 100%;
+    }
+}
+
+/* Short landscape screens (phones): drop the toolbar; the overlay has a menu button. */
+@media (orientation: landscape) and (max-height: 520px) {
+    .touch-active .game-bar {
+        display: none;
+    }
+
+    .touch-active body.page--game {
+        grid-template-rows: minmax(0, 1fr);
+    }
+
+    .touch-active .stage {
+        padding: calc(var(--space-2) + env(safe-area-inset-top)) var(--space-2) var(--space-2);
+    }
+}
+
+/* Landscape with touch controls: keep side gutters free for the d-pad and buttons. */
+@media (orientation: landscape) {
+    .touch-active .screen {
+        width: min(100cqw - 2 * 172px, 150cqh);
+    }
+
+    .touch-active .touch__group--system {
+        flex-wrap: wrap;
+        justify-content: center;
+        width: calc(150px * var(--touch-scale));
+        gap: calc(8px * var(--touch-scale));
+    }
+}
+
+.touch__group {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: calc(14px * var(--touch-scale));
+    transform: translate(-50%, -50%);
+    opacity: var(--touch-opacity);
+    touch-action: none;
+}
+
+.tbtn {
+    display: grid;
+    place-items: center;
+    min-width: var(--touch-min);
+    min-height: var(--touch-min);
+    padding: 0;
+    border: 2px solid #ffffff59;
+    background: #0a1f3acc;
+    color: #fff;
+    font: inherit;
+    font-weight: var(--weight-bold);
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: pointer;
+    box-shadow: 0 4px 12px #00000059;
+    transition: transform var(--duration-fast) var(--ease), background-color var(--duration-fast) var(--ease);
+}
+
+.tbtn.is-pressed {
+    background: var(--brand-blue-strong);
+    border-color: #fff;
+    transform: scale(0.92);
+}
+
+.tbtn--round {
+    width: calc(70px * var(--touch-scale));
+    height: calc(70px * var(--touch-scale));
+    border-radius: var(--radius-round);
+    font-size: calc(1.4rem * var(--touch-scale));
+}
+
+/* GBA layout: B lower-left, A upper-right. */
+.touch__group--face .tbtn--b {
+    margin-top: calc(40px * var(--touch-scale));
+}
+
+.tbtn--shoulder {
+    width: calc(96px * var(--touch-scale));
+    height: calc(48px * var(--touch-scale));
+    border-radius: var(--radius-md) var(--radius-md) var(--radius-sm) var(--radius-sm);
+    font-size: calc(1.1rem * var(--touch-scale));
+}
+
+.tbtn--pill {
+    height: calc(44px * var(--touch-scale));
+    padding: 0 calc(14px * var(--touch-scale));
+    border-radius: var(--radius-pill);
+    font-size: calc(0.8rem * var(--touch-scale));
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.tbtn--menu {
+    width: calc(48px * var(--touch-scale));
+    padding: 0;
+    font-size: calc(1.1rem * var(--touch-scale));
+}
+
+.dpad {
+    position: relative;
+    width: calc(156px * var(--touch-scale));
+    height: calc(156px * var(--touch-scale));
+    touch-action: none;
+}
+
+.dpad__arm {
+    position: absolute;
+    width: 34%;
+    height: 34%;
+    border: 2px solid #ffffff59;
+    background: #0a1f3acc;
+    box-shadow: 0 4px 12px #00000059;
+    transition: background-color var(--duration-fast) var(--ease);
+}
+
+.dpad__arm::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 0;
+    height: 0;
+    border: 8px solid transparent;
+}
+
+.dpad__arm--up {
+    left: 33%;
+    top: 0;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    border-bottom: 0;
+}
+
+.dpad__arm--up::after {
+    border-bottom-color: #ffffffb3;
+    top: -8px;
+}
+
+.dpad__arm--down {
+    left: 33%;
+    bottom: 0;
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+    border-top: 0;
+}
+
+.dpad__arm--down::after {
+    border-top-color: #ffffffb3;
+    top: 8px;
+}
+
+.dpad__arm--left {
+    top: 33%;
+    left: 0;
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+    border-right: 0;
+}
+
+.dpad__arm--left::after {
+    border-right-color: #ffffffb3;
+    left: -8px;
+}
+
+.dpad__arm--right {
+    top: 33%;
+    right: 0;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    border-left: 0;
+}
+
+.dpad__arm--right::after {
+    border-left-color: #ffffffb3;
+    left: 8px;
+}
+
+.dpad__hub {
+    position: absolute;
+    left: 33%;
+    top: 33%;
+    width: 34%;
+    height: 34%;
+    background: #0a1f3acc;
+}
+
+.dpad__arm.is-pressed {
+    background: var(--brand-blue-strong);
+}
+
+/* Layout editing: groups become draggable cards. */
+.touch--editing .touch__group {
+    opacity: 1;
+    padding: var(--space-2);
+    border: 2px dashed var(--accent);
+    border-radius: var(--radius-md);
+    background: var(--accent-softer);
+    cursor: grab;
+}
+
+.touch--editing .touch__group.is-dragging {
+    cursor: grabbing;
+    border-style: solid;
+    box-shadow: 0 0 0 6px var(--accent-soft);
+}
+
+.touch--editing .tbtn,
+.touch--editing .dpad {
+    pointer-events: none;
+}
+
+.layout-editor {
+    position: fixed;
+    left: 50%;
+    top: calc(var(--space-3) + env(safe-area-inset-top));
+    z-index: 50;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    width: max-content;
+    max-width: calc(100vw - 2 * var(--space-4));
+    padding: var(--space-2) var(--space-3);
+    transform: translateX(-50%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--panel);
+    box-shadow: var(--shadow-2);
+}
+
+.layout-editor__text {
+    margin: 0 var(--space-2);
+    font-size: var(--text-sm);
+}
+
+/* Toasts sit above the touch controls area on the game page. */
+.page--game .toasts {
+    top: calc(64px + env(safe-area-inset-top));
+    bottom: auto;
+}
+
+.dialog--menu {
+    width: min(380px, calc(100vw - 2 * var(--space-4)));
 }

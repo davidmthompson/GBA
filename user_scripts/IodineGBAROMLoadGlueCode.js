@@ -57,9 +57,13 @@ function fileLoadBIOS() {
 function fileLoadROM() {
     fileLoadShimCode(this.files, attachROM);
 }
-function downloadFile(fileName, registrationHandler) {
+function downloadFile(fileName, registrationHandler, progressHandler) {
     var ajax = new XMLHttpRequest();
     ajax.onload = registrationHandler;
+    ajax.onerror = registrationHandler;
+    if (typeof progressHandler == "function") {
+        ajax.onprogress = progressHandler;
+    }
     ajax.open("GET", "./" + fileName, true);
     ajax.responseType = "arraybuffer";
     ajax.overrideMimeType("text/plain; charset=x-user-defined");
